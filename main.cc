@@ -3,9 +3,11 @@
 
 auto main() -> int {
     Game g;
+
+    g.beginGame();
     g.print();
 
-    for (g.beginGame(); !g.isGameOver(); g.endRound()) {
+    do {
         if (g.playNextMove(Board::Black)) {
             g.print();
         }
@@ -19,7 +21,10 @@ auto main() -> int {
         else {
             std::cout << "White can't move\n";
         }
+
+        g.endRound();
     }
+    while (!g.isGameOver());
 
     std::cout << "Game over\n";
     return 0;
