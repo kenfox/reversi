@@ -13,6 +13,9 @@ LDFLAGS=-g
 othello: main.o $(OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $^
 
+main.o: main.cc game.h
+game.o: game.cc game.h board.h
+board.o: board.cc board.h
 sample.o: sample.cc sample.h
 
 t: $(OBJS) t.cc gtest.o gmock.o $(TESTS)
