@@ -1,31 +1,25 @@
 #include <iostream>
-#include "board.h"
+#include "game.h"
 
 auto main() -> int {
-    bool boardChanged;
-    Board b;
-    b.print();
+    Game g;
+    g.print();
 
-    do {
-        boardChanged = false;
-
-        if (b.playNextMove(Board::Black)) {
-            b.print();
-            boardChanged = true;
+    for (g.beginGame(); !g.isGameOver(); g.endRound()) {
+        if (g.playNextMove(Board::Black)) {
+            g.print();
         }
         else {
             std::cout << "Black can't move\n";
         }
 
-        if (b.playNextMove(Board::White)) {
-            b.print();
-            boardChanged = true;
+        if (g.playNextMove(Board::White)) {
+            g.print();
         }
         else {
             std::cout << "White can't move\n";
         }
     }
-    while (boardChanged);
 
     std::cout << "Game over\n";
     return 0;
