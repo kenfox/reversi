@@ -38,9 +38,10 @@ public:
         }
     }
 
-    Board &setup(int x, int y, Status status);
-
     bool play(Status who, int x, int y);
+
+    void print();
+    Board &setup(int x, int y, Status status);
 
 private:
     using Grid = unsigned long long;

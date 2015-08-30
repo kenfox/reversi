@@ -1,3 +1,4 @@
+#include <iostream>
 #include "board.h"
 
 bool Board::play(Board::Status who, int x, int y) {
@@ -67,6 +68,27 @@ Board::Grid Board::flip(Board::Grid taken, Board::Grid owner, bool toBlack,
         else {
             return rollback;
         }
+    }
+}
+
+void Board::print() {
+    std::cout << "  abcdefgh\n";
+    for (int y = 0; y <= 7; ++y) {
+        std::cout << (char)('1' + y) << ' ';
+        for (int x = 0; x <= 7; ++x) {
+            switch (square(x, y)) {
+            case Open:
+                std::cout << ' ';
+                break;
+            case White:
+                std::cout << 'o';
+                break;
+            case Black:
+                std::cout << '#';
+                break;
+            }
+        }
+        std::cout << '\n';
     }
 }
 

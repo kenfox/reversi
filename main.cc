@@ -1,7 +1,8 @@
-#include <iostream>
-using namespace std;
+#include "board.h"
 
 auto main() -> int {
-    cout << "Hello world\n";
+    Board b; b.print();
+    b.play(Board::Black, 3, 2); b.print();
+    b.play(Board::White, 2, 4); b.print();
     return 0;
 }
