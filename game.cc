@@ -5,6 +5,14 @@ void Game::beginGame() {
     round = 1;
     gameOver = false;
     boardChanged = false;
+    for (int x = 2; x <= 5; ++x) {
+        seen |= Board::bit(x, 2); possibleMove.emplace_back(x, 2);
+        seen |= Board::bit(x, 5); possibleMove.emplace_back(x, 5);
+    }
+    for (int y = 3; y <= 4; ++y) {
+        seen |= Board::bit(2, y); possibleMove.emplace_back(2, y);
+        seen |= Board::bit(5, y); possibleMove.emplace_back(5, y);
+    }
 }
 
 bool Game::isGameOver() {
@@ -17,13 +25,24 @@ void Game::endRound() {
     boardChanged = false;
 }
 
+bool Game::play(Board::Status who, Game::Position p) {
+    return board.play(who, p.first, p.second);
+}
+
 bool Game::playNextMove(Board::Status who) {
-    for (int y = 0; y <= 7; ++y) {
-        for (int x = 0; x <= 7; ++x) {
-            if (play(who, std::make_pair(x, y))) {
-                boardChanged = true;
-                return true;
-            }
+    for (auto i = possibleMove.cbegin(); i != possibleMove.cend(); ++i) {
+        if (play(who, *i)) {
+            auto p = *i;
+            boardChanged = true;
+            possibleMove.erase(i);
+            board.findOpenSquaresAround(p.first, p.second, [&](int x, int y) {
+                    auto mask = Board::bit(x, y);
+                    if (0 == (seen & mask)) {
+                        seen |= mask;
+                        possibleMove.emplace_back(x, y);
+                    }
+                });
+            return true;
         }
     }
     return false;

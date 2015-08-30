@@ -14,3 +14,10 @@ TEST(GameTest, SimplePlay) {
     EXPECT_EQ(Board::White, g.square(2, 4));
     EXPECT_EQ(Board::White, g.square(3, 4));
 }
+
+TEST(GameTest, TwoTurnsAutoPlay) {
+    Game g;
+    g.beginGame();
+    EXPECT_TRUE(g.playNextMove(Board::Black));
+    EXPECT_TRUE(g.playNextMove(Board::White));
+}

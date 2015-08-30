@@ -2,13 +2,14 @@
 #define GAME_H
 
 #include <utility>
+#include <vector>
 #include "board.h"
 
 class Game {
 public:
     using Position = std::pair<int, int>;
 
-    Game() : board() {
+    Game() : board(), possibleMove(), seen() {
         round = 0;
         boardChanged = false;
         gameOver = false;
@@ -18,9 +19,7 @@ public:
     bool isGameOver();
     void endRound();
 
-    bool play(Board::Status who, Position p) {
-        return board.play(who, p.first, p.second);
-    }
+    bool play(Board::Status who, Position p);
     bool playNextMove(Board::Status who);
 
     void print();
@@ -32,6 +31,8 @@ public:
 private:
 
     Board board;
+    std::vector<Position> possibleMove;
+    Board::Grid seen;
 
     int round;
     bool boardChanged;
