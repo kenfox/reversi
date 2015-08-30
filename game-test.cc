@@ -9,8 +9,8 @@ TEST(GameTest, InitialState) {
 
 TEST(GameTest, SimplePlay) {
     Game g;
-    EXPECT_TRUE(g.play(Board::Black, 3, 2));
-    EXPECT_TRUE(g.play(Board::White, 2, 4));
+    EXPECT_TRUE(g.play(Board::Black, std::make_pair(3, 2)));
+    EXPECT_TRUE(g.play(Board::White, std::make_pair(2, 4)));
     EXPECT_EQ(Board::White, g.square(2, 4));
     EXPECT_EQ(Board::White, g.square(3, 4));
 }

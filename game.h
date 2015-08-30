@@ -1,10 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <utility>
 #include "board.h"
 
 class Game {
 public:
+    using Position = std::pair<int, int>;
 
     Game() : board() {
         round = 0;
@@ -16,8 +18,8 @@ public:
     bool isGameOver();
     void endRound();
 
-    bool play(Board::Status who, int x, int y) {
-        return board.play(who, x, y);
+    bool play(Board::Status who, Position p) {
+        return board.play(who, p.first, p.second);
     }
     bool playNextMove(Board::Status who);
 

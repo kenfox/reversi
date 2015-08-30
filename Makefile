@@ -1,5 +1,5 @@
 OBJS=game.o board.o sample.o
-TESTS=game-test.cc #board-test.cc #sample-test.cc
+TESTS=game-test.cc board-test.cc #sample-test.cc
 
 GTESTDIR=/Users/ken/proj/googletest/googletest
 CXX=clang++
