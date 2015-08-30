@@ -1,5 +1,6 @@
 #include "board.h"
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
 // Board is 8x8
 // Players are White and Black
@@ -100,4 +101,24 @@ TEST(BoardTest, NoBoundBadPlay) {
         .setup(3, 3, Board::Black);
     EXPECT_FALSE(b.play(Board::White, 5, 3));
     EXPECT_EQ(Board::Black, b.square(1, 3));
+}
+
+TEST(BoardTest, OpenSquaresAroundSquare) {
+    // ........0
+    // ..ooo...1
+    // ..o*o...2
+    // ..owb...3
+    // ...bw...4
+    // ........5
+    // ........6
+    // ........7
+    // 01234567
+
+    Board b;
+    std::vector<int> openSquares;
+    b.findOpenSquaresAround(3, 2, [&](int x, int y) {
+            openSquares.push_back(x * 10 + y);
+        });
+    EXPECT_EQ(openSquares.size(), 6);
+    ASSERT_THAT(openSquares, testing::ElementsAre(21, 22, 23, 31, 41, 42));
 }

@@ -1,6 +1,26 @@
 #include <iostream>
 #include "board.h"
 
+void Board::ifOpenSquare(int x, int y, Board::Callback f) {
+    auto mask = bit(x, y);
+    if (0 == (taken & mask)) {
+        f(x, y);
+    }
+}
+
+void Board::findOpenSquaresAround(int x, int y, Board::Callback f) {
+    ifOpenSquare(x-1, y-1, f);
+    ifOpenSquare(x-1, y,   f);
+    ifOpenSquare(x-1, y+1, f);
+
+    ifOpenSquare(x,   y-1, f);
+    ifOpenSquare(x,   y+1, f);
+
+    ifOpenSquare(x+1, y-1, f);
+    ifOpenSquare(x+1, y,   f);
+    ifOpenSquare(x+1, y+1, f);
+}
+
 bool Board::play(Board::Status who, int x, int y) {
     auto mask = bit(x, y);
 

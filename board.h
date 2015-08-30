@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <functional>
+
 class Board {
 public:
     enum Status {
@@ -37,6 +39,11 @@ public:
             return Open;
         }
     }
+
+    using Callback = const std::function<void(int, int)>&;
+
+    void ifOpenSquare(int x, int y, Callback f);
+    void findOpenSquaresAround(int x, int y, Callback f);
 
     bool play(Status who, int x, int y);
 
