@@ -32,6 +32,17 @@ bool Board::play(Board::Status who, int x, int y) {
     return false;
 }
 
+bool Board::playNextMove(Board::Status who) {
+    for (int y = 0; y <= 7; ++y) {
+        for (int x = 0; x <= 7; ++x) {
+            if (play(who, x, y)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 Board::Grid Board::flip(Board::Grid taken, Board::Grid owner, bool toBlack,
                         int x, int y, int dx, int dy)
 {

@@ -39,6 +39,7 @@ public:
     }
 
     bool play(Status who, int x, int y);
+    bool playNextMove(Status who);
 
     void print();
     Board &setup(int x, int y, Status status);
