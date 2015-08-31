@@ -30,6 +30,8 @@ public:
 
 private:
 
+    void appendPossibleMoves(int x, int y);
+
     Board board;
     std::vector<Position> possibleMove;
     Board::Grid seen;

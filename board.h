@@ -30,6 +30,10 @@ public:
                      00000000);
     }
 
+    bool openSquare(int x, int y) {
+        return 0 == (taken & bit(x, y));
+    }
+
     Status square(int x, int y) {
         auto mask = bit(x, y);
         if (taken & mask) {

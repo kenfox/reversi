@@ -2,8 +2,7 @@
 #include "board.h"
 
 void Board::ifOpenSquare(int x, int y, Board::Callback f) {
-    auto mask = bit(x, y);
-    if (0 == (taken & mask)) {
+    if (openSquare(x, y)) {
         f(x, y);
     }
 }
