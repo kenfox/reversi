@@ -25,82 +25,81 @@
 
 TEST(BoardTest, InitialState) {
     Board b;
-    EXPECT_EQ(Board::Open, b.square(0, 0));
-    EXPECT_EQ(Board::Open, b.square(1, 0));
-    EXPECT_EQ(Board::Open, b.square(7, 0));
-    EXPECT_EQ(Board::Open, b.square(0, 1));
-    EXPECT_EQ(Board::Open, b.square(1, 1));
-    EXPECT_EQ(Board::Open, b.square(7, 1));
-    EXPECT_EQ(Board::Open, b.square(0, 7));
-    EXPECT_EQ(Board::Open, b.square(1, 7));
-    EXPECT_EQ(Board::Open, b.square(7, 7));
-    EXPECT_EQ(Board::White, b.square(3, 3));
-    EXPECT_EQ(Board::Black, b.square(3, 4));
-    EXPECT_EQ(Board::Black, b.square(4, 3));
-    EXPECT_EQ(Board::White, b.square(4, 4));
+    EXPECT_EQ(Board::OpenSquare, b.square(0, 0));
+    EXPECT_EQ(Board::OpenSquare, b.square(1, 0));
+    EXPECT_EQ(Board::OpenSquare, b.square(7, 0));
+    EXPECT_EQ(Board::OpenSquare, b.square(0, 1));
+    EXPECT_EQ(Board::OpenSquare, b.square(1, 1));
+    EXPECT_EQ(Board::OpenSquare, b.square(7, 1));
+    EXPECT_EQ(Board::OpenSquare, b.square(0, 7));
+    EXPECT_EQ(Board::OpenSquare, b.square(1, 7));
+    EXPECT_EQ(Board::OpenSquare, b.square(7, 7));
+    EXPECT_EQ(Board::WhiteSquare, b.square(3, 3));
+    EXPECT_EQ(Board::BlackSquare, b.square(3, 4));
+    EXPECT_EQ(Board::BlackSquare, b.square(4, 3));
+    EXPECT_EQ(Board::WhiteSquare, b.square(4, 4));
 }
 
 TEST(BoardTest, BadValueBadPlay) {
     Board b;
-    EXPECT_FALSE(b.play(Board::Open, 0, 0));
-    EXPECT_FALSE(b.play(Board::White, -1, 0));
-    EXPECT_FALSE(b.play(Board::White, 8, 0));
-    EXPECT_FALSE(b.play(Board::White, 0, -1));
-    EXPECT_FALSE(b.play(Board::White, 0, 8));
+    EXPECT_FALSE(b.play(Board::WhitePlayer, -1, 0));
+    EXPECT_FALSE(b.play(Board::WhitePlayer, 8, 0));
+    EXPECT_FALSE(b.play(Board::WhitePlayer, 0, -1));
+    EXPECT_FALSE(b.play(Board::WhitePlayer, 0, 8));
 }
 
 TEST(BoardTest, TakenSquareBadPlay) {
     Board b;
-    EXPECT_FALSE(b.play(Board::Black, 3, 3));
-    EXPECT_EQ(Board::White, b.square(3, 3));
-    EXPECT_FALSE(b.play(Board::White, 3, 3));
+    EXPECT_FALSE(b.play(Board::BlackPlayer, 3, 3));
+    EXPECT_EQ(Board::WhiteSquare, b.square(3, 3));
+    EXPECT_FALSE(b.play(Board::WhitePlayer, 3, 3));
 }
 
 TEST(BoardTest, NoFlipBadPlay) {
     Board b;
-    EXPECT_FALSE(b.play(Board::Black, 5, 3));
-    EXPECT_EQ(Board::Open, b.square(5, 3));
-    EXPECT_EQ(Board::White, b.square(3, 3));
-    EXPECT_EQ(Board::Black, b.square(3, 4));
-    EXPECT_EQ(Board::Black, b.square(4, 3));
-    EXPECT_EQ(Board::White, b.square(4, 4));
+    EXPECT_FALSE(b.play(Board::BlackPlayer, 5, 3));
+    EXPECT_EQ(Board::OpenSquare, b.square(5, 3));
+    EXPECT_EQ(Board::WhiteSquare, b.square(3, 3));
+    EXPECT_EQ(Board::BlackSquare, b.square(3, 4));
+    EXPECT_EQ(Board::BlackSquare, b.square(4, 3));
+    EXPECT_EQ(Board::WhiteSquare, b.square(4, 4));
 }
 
 TEST(BoardTest, PlayBlack) {
     Board b;
-    EXPECT_TRUE(b.play(Board::Black, 3, 2));
-    EXPECT_EQ(Board::Black, b.square(3, 2));
-    EXPECT_EQ(Board::Black, b.square(3, 3));
+    EXPECT_TRUE(b.play(Board::BlackPlayer, 3, 2));
+    EXPECT_EQ(Board::BlackSquare, b.square(3, 2));
+    EXPECT_EQ(Board::BlackSquare, b.square(3, 3));
 }
 
 TEST(BoardTest, PlayWhite) {
     Board b;
-    EXPECT_TRUE(b.play(Board::Black, 3, 2));
-    EXPECT_TRUE(b.play(Board::White, 2, 4));
-    EXPECT_EQ(Board::White, b.square(2, 4));
-    EXPECT_EQ(Board::White, b.square(3, 4));
+    EXPECT_TRUE(b.play(Board::BlackPlayer, 3, 2));
+    EXPECT_TRUE(b.play(Board::WhitePlayer, 2, 4));
+    EXPECT_EQ(Board::WhiteSquare, b.square(2, 4));
+    EXPECT_EQ(Board::WhiteSquare, b.square(3, 4));
 }
 
 TEST(BoardTest, BigPlayWhite) {
     Board b = Board()
-        .setup(0, 3, Board::White)
-        .setup(1, 3, Board::Black)
-        .setup(2, 3, Board::Black)
-        .setup(3, 3, Board::Black);
-    EXPECT_EQ(Board::Black, b.square(3, 3));
-    EXPECT_EQ(Board::Black, b.square(4, 3));
-    EXPECT_TRUE(b.play(Board::White, 5, 3));
-    EXPECT_EQ(Board::White, b.square(1, 3));
+        .setup(0, 3, Board::WhiteSquare)
+        .setup(1, 3, Board::BlackSquare)
+        .setup(2, 3, Board::BlackSquare)
+        .setup(3, 3, Board::BlackSquare);
+    EXPECT_EQ(Board::BlackSquare, b.square(3, 3));
+    EXPECT_EQ(Board::BlackSquare, b.square(4, 3));
+    EXPECT_TRUE(b.play(Board::WhitePlayer, 5, 3));
+    EXPECT_EQ(Board::WhiteSquare, b.square(1, 3));
 }
 
 TEST(BoardTest, NoBoundBadPlay) {
     Board b = Board()
-        .setup(0, 3, Board::Black)
-        .setup(1, 3, Board::Black)
-        .setup(2, 3, Board::Black)
-        .setup(3, 3, Board::Black);
-    EXPECT_FALSE(b.play(Board::White, 5, 3));
-    EXPECT_EQ(Board::Black, b.square(1, 3));
+        .setup(0, 3, Board::BlackSquare)
+        .setup(1, 3, Board::BlackSquare)
+        .setup(2, 3, Board::BlackSquare)
+        .setup(3, 3, Board::BlackSquare);
+    EXPECT_FALSE(b.play(Board::WhitePlayer, 5, 3));
+    EXPECT_EQ(Board::BlackSquare, b.square(1, 3));
 }
 
 TEST(BoardTest, OpenSquaresAroundSquare) {

@@ -3,29 +3,35 @@
 
 void Game::beginGame() {
     round = 1;
-    gameOver = false;
+    turnsWithoutChange = 0;
     boardChanged = false;
     for (int x = 0; x <= 7; ++x) {
         for (int y = 0; y <= 7; ++y) {
-            if (!board.openSquare(x, y)) {
-                appendPossibleMoves(x, y);
+            if (!board.hasOpenSquare(x, y)) {
+                appendFrontier(x, y);
             }
         }
     }
 }
 
 bool Game::isGameOver() {
-    return gameOver;
+    return turnsWithoutChange >= 2;
 }
 
-void Game::endRound() {
-    ++round;
-    gameOver = !boardChanged;
-    boardChanged = false;
-}
+void Game::endTurn() {
+    activePlayer = (activePlayer == Board::BlackPlayer)
+        ? Board::WhitePlayer
+        : Board::BlackPlayer;
 
-bool Game::play(Board::Status who, Game::Position p) {
-    return board.play(who, p.first, p.second);
+    if (activePlayer == Board::BlackPlayer) ++round;
+
+    if (boardChanged) {
+        turnsWithoutChange = 0;
+        boardChanged = false;
+    }
+    else {
+        ++turnsWithoutChange;
+    }
 }
 
 /*
@@ -59,17 +65,34 @@ lookahead with a brute force search.
 
  */
 
-bool Game::playNextMove(Board::Status who) {
-    for (auto i = possibleMove.cbegin(); i != possibleMove.cend(); ++i) {
-        if (play(who, *i)) {
+bool Game::playNextMove() {
+    auto played = false;
+    for (auto i = frontier.cbegin(); i != frontier.cend(); ++i) {
+        if (board.play(activePlayer, *i)) {
             auto playedPosition = *i;
             boardChanged = true;
-            possibleMove.erase(i);
-            appendPossibleMoves(playedPosition.first, playedPosition.second);
-            return true;
+            frontier.erase(i);
+            appendFrontier(playedPosition.first, playedPosition.second);
+            played = true;
+            break;
         }
     }
-    return false;
+    endTurn();
+    return played;
+}
+
+void Game::setupBoard(char *state) {
+    if (state) {
+        board.setup(state);
+    }
+}
+
+void Game::setupPlayer(char *player) {
+    if (player) {
+        activePlayer = (player && strcmp(player, "white") == 0)
+            ? Board::WhitePlayer
+            : Board::BlackPlayer;
+    }
 }
 
 void Game::print() {
@@ -77,17 +100,17 @@ void Game::print() {
     board.print();
 }
 
-Game &Game::setup(int x, int y, Board::Status status) {
+Game &Game::setup(int x, int y, Board::SquareStatus status) {
     board.setup(x, y, status);
     return *this;
 }
 
-void Game::appendPossibleMoves(int x, int y) {
+void Game::appendFrontier(int x, int y) {
     board.findOpenSquaresAround(x, y, [&](int x, int y) {
             auto mask = Board::bit(x, y);
             if (0 == (seen & mask)) {
                 seen |= mask;
-                possibleMove.emplace_back(x, y);
+                frontier.emplace_back(x, y);
             }
         });
 }

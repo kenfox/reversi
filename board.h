@@ -5,8 +5,13 @@
 
 class Board {
 public:
-    enum Status {
-        Open, White, Black
+    using Position = std::pair<int, int>;
+
+    enum Player {
+        WhitePlayer, BlackPlayer
+    };
+    enum SquareStatus {
+        WhiteSquare, BlackSquare, OpenSquare
     };
 
 #define GRID(R1,R2,R3,R4,R5,R6,R7,R8) 0b##R1##R2##R3##R4##R5##R6##R7##R8
@@ -30,17 +35,19 @@ public:
                      00000000);
     }
 
-    bool openSquare(int x, int y) {
+    void setup(char *state);
+
+    bool hasOpenSquare(int x, int y) {
         return 0 == (taken & bit(x, y));
     }
 
-    Status square(int x, int y) {
+    SquareStatus square(int x, int y) {
         auto mask = bit(x, y);
         if (taken & mask) {
-            return (owner & mask) ? Black : White;
+            return (owner & mask) ? BlackSquare : WhiteSquare;
         }
         else {
-            return Open;
+            return OpenSquare;
         }
     }
 
@@ -49,10 +56,13 @@ public:
     void ifOpenSquare(int x, int y, Callback f);
     void findOpenSquaresAround(int x, int y, Callback f);
 
-    bool play(Status who, int x, int y);
+    bool play(Player who, int x, int y);
+    bool play(Player who, Position pos) {
+        return play(who, pos.first, pos.second);
+    }
 
     void print();
-    Board &setup(int x, int y, Status status);
+    Board &setup(int x, int y, SquareStatus status);
 
     using Grid = unsigned long long;
 

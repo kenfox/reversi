@@ -7,38 +7,43 @@
 
 class Game {
 public:
-    using Position = std::pair<int, int>;
-
-    Game() : board(), possibleMove(), seen() {
+    Game() : board(), frontier(), seen() {
+        activePlayer = Board::BlackPlayer;
         round = 0;
+        turnsWithoutChange = 0;
         boardChanged = false;
-        gameOver = false;
     }
 
     void beginGame();
     bool isGameOver();
-    void endRound();
+    void endTurn();
 
-    bool play(Board::Status who, Position p);
-    bool playNextMove(Board::Status who);
+    Board::Player player() { return activePlayer; }
+    const char *playerName() { return (activePlayer == Board::BlackPlayer) ? "Black" : "White"; }
+
+    bool playNextMove();
+
+    void setupBoard(char *state);
+    void setupPlayer(char *player);
 
     void print();
-    Game &setup(int x, int y, Board::Status status);
-    Board::Status square(int x, int y) {
+    Game &setup(int x, int y, Board::SquareStatus status);
+    Board::SquareStatus square(int x, int y) {
         return board.square(x, y);
     }
 
 private:
 
-    void appendPossibleMoves(int x, int y);
+    void appendFrontier(int x, int y);
 
     Board board;
-    std::vector<Position> possibleMove;
+    std::vector<Board::Position> frontier;
     Board::Grid seen;
 
+    Board::Player activePlayer;
     int round;
+    int turnsWithoutChange;
     bool boardChanged;
-    bool gameOver;
 };
 
 #endif

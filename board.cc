@@ -1,8 +1,11 @@
 #include <iostream>
 #include "board.h"
 
+void Board::setup(char *state) {
+}
+
 void Board::ifOpenSquare(int x, int y, Board::Callback f) {
-    if (openSquare(x, y)) {
+    if (hasOpenSquare(x, y)) {
         f(x, y);
     }
 }
@@ -20,14 +23,13 @@ void Board::findOpenSquaresAround(int x, int y, Board::Callback f) {
     ifOpenSquare(x+1, y+1, f);
 }
 
-bool Board::play(Board::Status who, int x, int y) {
+bool Board::play(Board::Player who, int x, int y) {
     auto mask = bit(x, y);
 
-    if ((who == White || who == Black) &&
-        (0 <= y && y <= 7 && 0 <= x && x <= 7) &&
+    if ((0 <= y && y <= 7 && 0 <= x && x <= 7) &&
         (0 == (taken & mask)))
     {
-        auto toBlack = who == Black;
+        auto toBlack = who == BlackPlayer;
         auto changed = owner;
 
         changed = flip(taken, changed, toBlack, x, y, -1, -1);
@@ -96,13 +98,13 @@ void Board::print() {
         std::cout << (char)('1' + y) << ' ';
         for (int x = 0; x <= 7; ++x) {
             switch (square(x, y)) {
-            case Open:
+            case OpenSquare:
                 std::cout << ' ';
                 break;
-            case White:
+            case WhiteSquare:
                 std::cout << 'o';
                 break;
-            case Black:
+            case BlackSquare:
                 std::cout << '#';
                 break;
             }
@@ -111,14 +113,14 @@ void Board::print() {
     }
 }
 
-Board &Board::setup(int x, int y, Board::Status status) {
+Board &Board::setup(int x, int y, Board::SquareStatus status) {
     auto mask = bit(x, y);
-    if (status == Open) {
+    if (status == OpenSquare) {
         taken &= ~mask;
     }
     else {
         taken |= mask;
-        if (status == Black) {
+        if (status == BlackSquare) {
             owner |= mask;
         }
         else {
