@@ -14,7 +14,6 @@ auto main(int argc, char *argv[]) -> int {
     }
 
     g.beginGame();
-    g.print();
 
 #ifdef FIND_NEXT_MOVE
 
@@ -23,13 +22,9 @@ auto main(int argc, char *argv[]) -> int {
 #else
 
     do {
-        std::cout << g.playerName() << " to move\n";
-
-        if (g.playNextMove()) {
-            g.print();
-        }
-        else {
-            std::cout << "no valid move\n";
+        g.print();
+        if (!g.playNextMove()) {
+            std::cout << "No valid move\n";
         }
     }
     while (!g.isGameOver());

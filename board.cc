@@ -5,12 +5,6 @@
 void Board::setup(char *state) {
 }
 
-void Board::ifOpenSquare(int x, int y, Board::Callback f) {
-    if (hasOpenSquare(x, y)) {
-        f(x, y);
-    }
-}
-
 void Board::findOpenSquaresAround(int x, int y, Board::Callback f) {
     ifOpenSquare(x-1, y-1, f);
     ifOpenSquare(x-1, y,   f);
@@ -25,28 +19,33 @@ void Board::findOpenSquaresAround(int x, int y, Board::Callback f) {
 }
 
 bool Board::play(Board::Player who, int x, int y) {
-    auto mask = bit(x, y);
+    auto square = squareId(x, y);
 
     if ((0 <= y && y <= 7 && 0 <= x && x <= 7) &&
-        (0 == (taken & mask)))
+        (0 == (taken & square)))
     {
         auto toBlack = who == BlackPlayer;
-        auto changed = owner;
+        auto changedBlack = black;
 
-        changed = flip(taken, changed, toBlack, x, y, -1, -1);
-        changed = flip(taken, changed, toBlack, x, y, -1,  0);
-        changed = flip(taken, changed, toBlack, x, y, -1,  1);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y, -1, -1);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y, -1,  0);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y, -1,  1);
 
-        changed = flip(taken, changed, toBlack, x, y,  0, -1);
-        changed = flip(taken, changed, toBlack, x, y,  0,  1);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y,  0, -1);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y,  0,  1);
 
-        changed = flip(taken, changed, toBlack, x, y,  1, -1);
-        changed = flip(taken, changed, toBlack, x, y,  1,  0);
-        changed = flip(taken, changed, toBlack, x, y,  1,  1);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y,  1, -1);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y,  1,  0);
+        changedBlack = flip(taken, changedBlack, toBlack, x, y,  1,  1);
 
-        if (changed != owner) {
-            taken |= mask;
-            owner = toBlack ? changed | mask : changed;
+        if (changedBlack != black) {
+            black = changedBlack;
+            if (toBlack) {
+                takeByBlack(square);
+            }
+            else {
+                takeByWhite(square);
+            }
             return true;
         }
     }
@@ -54,42 +53,40 @@ bool Board::play(Board::Player who, int x, int y) {
     return false;
 }
 
-Board::Grid Board::flip(Board::Grid taken, Board::Grid owner, bool toBlack,
+Board::Grid Board::flip(Board::Grid taken, Board::Grid black, bool toBlack,
                         int x, int y, int dx, int dy)
 {
-    auto rollback = owner;
+    auto rollback = black;
 
     for (;;) {
         x += dx;
         y += dy;
 
         if (0 <= y && y <= 7 && 0 <= x && x <= 7) {
-            auto mask = bit(x, y);
-            if (taken & mask) {
-                if (owner & mask) {
+            auto square = squareId(x, y);
+            if (taken & square) {
+                if (black & square) {
                     if (toBlack) {
-                        return owner;
+                        return black;
                     }
                     else {
-                        owner &= ~mask;
+                        black &= ~square;
+                        continue;
                     }
                 }
                 else {
                     if (toBlack) {
-                        owner |= mask;
+                        black |= square;
+                        continue;
                     }
                     else {
-                        return owner;
+                        return black;
                     }
                 }
             }
-            else {
-                return rollback;
-            }
         }
-        else {
-            return rollback;
-        }
+
+        return rollback;
     }
 }
 
@@ -102,11 +99,11 @@ void Board::print() {
             case OpenSquare:
                 std::cout << ' ';
                 break;
-            case WhiteSquare:
-                std::cout << 'o';
-                break;
             case BlackSquare:
                 std::cout << '#';
+                break;
+            case WhiteSquare:
+                std::cout << 'o';
                 break;
             }
         }
@@ -115,18 +112,17 @@ void Board::print() {
 }
 
 Board &Board::setup(int x, int y, Board::SquareStatus status) {
-    auto mask = bit(x, y);
-    if (status == OpenSquare) {
-        taken &= ~mask;
-    }
-    else {
-        taken |= mask;
-        if (status == BlackSquare) {
-            owner |= mask;
-        }
-        else {
-            owner &= ~mask;
-        }
+    auto square = squareId(x, y);
+    switch (status) {
+    case OpenSquare:
+        clear(square);
+        break;
+    case BlackSquare:
+        takeByBlack(square);
+        break;
+    case WhiteSquare:
+        takeByWhite(square);
+        break;
     }
     return *this;
 }

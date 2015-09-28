@@ -1,14 +1,29 @@
 #include <iostream>
 #include "game.h"
 
+void Game::setupBoard(char *state) {
+    if (state) {
+        board.setup(state);
+    }
+}
+
+void Game::setupPlayer(char *player) {
+    if (player) {
+        activePlayer = (player && strcmp(player, "white") == 0)
+            ? Board::WhitePlayer
+            : Board::BlackPlayer;
+    }
+}
+
 void Game::beginGame() {
     round = 1;
     turnsWithoutChange = 0;
     boardChanged = false;
+    frontier.clear();
     for (int x = 0; x <= 7; ++x) {
         for (int y = 0; y <= 7; ++y) {
             if (!board.hasOpenSquare(x, y)) {
-                appendFrontier(x, y);
+                appendFrontier(Board::Position(x, y));
             }
         }
     }
@@ -72,7 +87,7 @@ bool Game::playNextMove() {
             auto playedPosition = *i;
             boardChanged = true;
             frontier.erase(i);
-            appendFrontier(playedPosition.first, playedPosition.second);
+            appendFrontier(playedPosition);
             played = true;
             break;
         }
@@ -81,22 +96,10 @@ bool Game::playNextMove() {
     return played;
 }
 
-void Game::setupBoard(char *state) {
-    if (state) {
-        board.setup(state);
-    }
-}
-
-void Game::setupPlayer(char *player) {
-    if (player) {
-        activePlayer = (player && strcmp(player, "white") == 0)
-            ? Board::WhitePlayer
-            : Board::BlackPlayer;
-    }
-}
-
 void Game::print() {
-    std::cout << "--------------------- Round " << round << std::endl;
+    std::cout << "--------------------- Round " << round
+              << " Player " << playerName()
+              << std::endl;
     board.print();
 }
 
@@ -105,11 +108,11 @@ Game &Game::setup(int x, int y, Board::SquareStatus status) {
     return *this;
 }
 
-void Game::appendFrontier(int x, int y) {
-    board.findOpenSquaresAround(x, y, [&](int x, int y) {
-            auto mask = Board::bit(x, y);
-            if (0 == (seen & mask)) {
-                seen |= mask;
+void Game::appendFrontier(Board::Position pos) {
+    board.findOpenSquaresAround(pos.first, pos.second, [&](int x, int y) {
+            auto square = Board::squareId(x, y);
+            if (0 == (seen & square)) {
+                seen |= square;
                 frontier.emplace_back(x, y);
             }
         });

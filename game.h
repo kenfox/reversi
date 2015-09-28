@@ -14,17 +14,14 @@ public:
         boardChanged = false;
     }
 
+    void setupBoard(char *state);
+    void setupPlayer(char *player);
+
     void beginGame();
     bool isGameOver();
     void endTurn();
 
-    Board::Player player() { return activePlayer; }
-    const char *playerName() { return (activePlayer == Board::BlackPlayer) ? "Black" : "White"; }
-
     bool playNextMove();
-
-    void setupBoard(char *state);
-    void setupPlayer(char *player);
 
     void print();
     Game &setup(int x, int y, Board::SquareStatus status);
@@ -32,9 +29,12 @@ public:
         return board.square(x, y);
     }
 
+    Board::Player player() { return activePlayer; }
+    const char *playerName() { return (activePlayer == Board::BlackPlayer) ? "Black" : "White"; }
+
 private:
 
-    void appendFrontier(int x, int y);
+    void appendFrontier(Board::Position pos);
 
     Board board;
     std::vector<Board::Position> frontier;
