@@ -14,7 +14,7 @@ public:
         WhiteSquare, BlackSquare, OpenSquare
     };
 
-#define GRID(R1,R2,R3,R4,R5,R6,R7,R8) 0b##R1##R2##R3##R4##R5##R6##R7##R8
+#define GRID(R1,R2,R3,R4,R5,R6,R7,R8) reverseBits(0b##R1##R2##R3##R4##R5##R6##R7##R8)
 
     Board() {
         taken = GRID(00000000,
@@ -67,8 +67,10 @@ public:
     using Grid = unsigned long long;
 
     static Grid bit(int x, int y) {
-        return 1L << (63 - (y * 8 + x));
+        return 1L << (y * 8 + x);
     }
+
+    static Grid reverseBits(Grid v);
 
 private:
 

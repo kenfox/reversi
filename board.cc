@@ -1,4 +1,5 @@
 #include <iostream>
+#include <climits>
 #include "board.h"
 
 void Board::setup(char *state) {
@@ -128,4 +129,17 @@ Board &Board::setup(int x, int y, Board::SquareStatus status) {
         }
     }
     return *this;
+}
+
+Board::Grid Board::reverseBits(Board::Grid v) {
+    // http://graphics.stanford.edu/~seander/bithacks.html#BitReverseObvious
+    auto r = v;
+    auto s = sizeof(v) * CHAR_BIT - 1;
+    for (v >>= 1; v; v >>= 1) {
+        r <<= 1;
+        r |= v & 1;
+        s--;
+    }
+    r <<= s;
+    return r;
 }
